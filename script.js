@@ -10,6 +10,11 @@ function setTerminal() {
   terminal.style.innerHeight = innerHeight + "px";
 }
 
+function setErrorMessage(value) {
+  var message = "-denknow:" + value + ": command not found\n";
+  return message;
+}
+
 window.addEventListener("load", function () {
   terminal = document.getElementById("terminal");
   setTerminal();
@@ -30,17 +35,39 @@ window.addEventListener("keyup", function (e) {
 
     if (trimValue.length >= 15) {
       console.log(trimValue);
-      sliseValue = trimValue.slice(-15);
-      console.log(sliseValue);
-      if (sliseValue === "Command>connect") {
+      sliceValue = trimValue.slice(-15);
+      console.log(sliceValue);
+      if (sliceValue === "Command>connect") {
         terminal.value = "SUCCESS";
       } else {
-        terminal.value = value + operater;
+        if (sliceValue.indexOf(">") >= 0) {
+          var sliceCommand = sliceValue.substring(
+            sliceValue.indexOf(">") + 1,
+            sliceValue.length
+          );
+          terminal.value =
+            value +
+            setErrorMessage(sliceCommand.replace(/\r?\n/g, "")) +
+            operater;
+        } else {
+          terminal.value = value + operater;
+        }
         console.log("[" + value + "]");
         terminal.focus();
       }
     } else {
-      terminal.value = value + operater;
+      if (value.indexOf(">") >= 0) {
+        var sliceCommand = value.substring(
+          value.indexOf(">") + 1,
+          value.length
+        );
+        terminal.value =
+          value +
+          setErrorMessage(sliceCommand.replace(/\r?\n/g, "")) +
+          operater;
+      } else {
+        terminal.value = value + operater;
+      }
       console.log("[" + value + "]");
       terminal.focus();
     }
